@@ -11,8 +11,9 @@ bhtsne/.modified: bhtsne/.cloned
 		| sed 's@.*) tree->computeNonEdgeForces.*buff.*@for(int n = 0; n < N; n++) { double tmp=0; tree->computeNonEdgeForces(n, theta, buff, \&tmp); sum_Q += tmp; }@' \
 		> tmp.cpp
 	mv tmp.cpp bhtsne/tsne.cpp 
+	cd bhtsne; git checkout -- sptree.cpp
 	cat bhtsne/sptree.cpp \
-		| sed 's@^.*children[i]->computeEdgeForces.*@for(unsigned int i = 0; i < no_children; i++) { double tmp=0; children[i]->computeNonEdgeForces(point_index, theta, neg_f, &tmp); *sum_Q += tmp; }@' > tmp.cpp
+		| sed 's@^.*children\[i\]->computeNonEdgeForces.*@for(unsigned int i = 0; i < no_children; i++) { double tmp=0; children[i]->computeNonEdgeForces(point_index, theta, neg_f, \&tmp); *sum_Q += tmp; }@' > tmp.cpp
 	mv tmp.cpp bhtsne/sptree.cpp 
 	touch bhtsne/.modified
 
