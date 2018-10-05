@@ -1,0 +1,1 @@
+unlink("init.dat")
