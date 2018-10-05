@@ -1,10 +1,11 @@
 all: .cloned .modified bhtsne/bhtsne
 
 .cloned:
-	git clone https://github.com/lvdmaaten/bhtsne && touch .cloned
+	git clone https://github.com/lvdmaaten/bhtsne && touch .cloned	
 
 .modified: .cloned
-	cat bhtsne/tsne.cpp | sed "s/^double TSNE::randn() {/double TSNE::randn() { return 0;/" > tmp.cpp
+	cd bhtsne; git checkout -- tsne.cpp
+	cat bhtsne/tsne.cpp | sed 's@^.*randn() \*.*@FILE* h=fopen("$(CURDIR)/testthat/init.dat", "r+b"); if (h==NULL) { printf("init file not available\\\\n"); } fread(Y, sizeof(double), N*no_dims, h); fclose(h);@' > tmp.cpp
 	mv tmp.cpp bhtsne/tsne.cpp && touch .modified
 
 bhtsne/bhtsne: .modified
