@@ -4,14 +4,19 @@ WRITEDATA <- function(data, fname=NULL) {
     return(fname)
 }
 
+INITIALIZE <- function(nsamples, dims=2) {
+    X <- rnorm(nsamples*dims) * 0.0001
+    writeBin(con="init.dat", object=X)
+    invisible(NULL)
+}
+
 library(Rtsne)
 TESTFUN <- function(fname, perplexity=30, theta=0.5, max_iter=10, dims=2) {
     incoming <- read.table(fname, header=FALSE)
-    out <- Rtsne(as.matrix(incoming), perplexity=perplexity, theta=theta,
-        Y_init=matrix(seq_len(nrow(incoming) * dims) - 1L, nrow(incoming), ncol=dims, byrow=TRUE) * 0.0001, 
-        dims=dims, 
-        max_iter=max_iter, pca=FALSE,
-        stop_lying_iter=250L, mom_switch_iter=250L)
+    Y_in <- readBin("init.dat", what="numeric", n=dims*nrow(incoming))
+    Y_in <- matrix(Y_in, nrow(incoming), ncol=dims, byrow=TRUE)
+    out <- Rtsne(as.matrix(incoming), perplexity=perplexity, theta=theta, Y_init=Y_in, 
+        dims=dims, max_iter=max_iter, pca=FALSE, stop_lying_iter=250L, mom_switch_iter=250L)
     out$Y    
 }
 
